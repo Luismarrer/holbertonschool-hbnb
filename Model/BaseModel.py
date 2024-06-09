@@ -28,5 +28,5 @@ class BaseModel:
         """
         Returns a string representation of the BaseModel instance.
         """
-        return f"ID: {self.id}, Created: {self.created_at},
+        return f"ID: {self.id}, Created: {self.created_at},\
         Updated: {self.update_at}"
