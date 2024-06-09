@@ -19,6 +19,9 @@ class Place(BaseModel):
         Args:
             name (str): The name of the place.
         """
+        if not name or not City or not User or not description\
+                or not price_per_nigth or not max_guest:
+            raise ValueError("Invalid arguments")
         super().__init__()
         self.host = User
         self.city = City
