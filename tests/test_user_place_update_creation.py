@@ -20,11 +20,11 @@ def test_valid_user_creation():
     assert test6.password == "password"
 
 def test_invalid_user_creation():
-	"""
-	Test case for invalid user creation.
-	"""
-	with pytest.raises(ValueError):
-		User(first_name="John", last_name="Doe", email="invalid-email", password="password", birthdate="1990-01-01")
+    """
+    Test case for invalid user creation.
+    """
+    with pytest.raises(ValueError):
+        User(first_name="John", last_name="Doe", email="invalid-email", password="password", birthdate="1990-01-01")
 
 def test_valid_place_creation():
     """

@@ -23,13 +23,13 @@ def test_place_host_relationship():
     place = test4.add_place("San Juan Apartment 4", San_Juan, "A lovely apartment near Central Park.", 100, 4)
     assert place.host == test4
     assert place in test4.places
-		
+        
 def test_review_relationship():
     """
     Test the relationship between a Review and its author User, as well as the relationship between a Review and its associated Place.
     """
     place = test4.add_place("Central Park Apartment", New_York, "A lovely apartment near Central Park.", 100, 4)
     with pytest.raises(ValueError):
-    	review = test4.add_review(place=place, text="Great place to stay!", rating=5.0)
+        review = test4.add_review(place=place, text="Great place to stay!", rating=5.0)
 
 

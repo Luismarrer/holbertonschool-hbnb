@@ -6,108 +6,151 @@ from Model.BaseModel import BaseModel
 from Model.Review import Review
 from Model.Place import Place
 from datetime import datetime
+import re
+
 
 class User(BaseModel):
-	"""
-	This class represents a user.
-	"""
-	used_emails = set()
-	def __init__(self, first_name, last_name, email, password, birthdate):
-		"""
-		Initializes a new User object.
+    """
+    This class represents a user.
 
-		Args:
-			first_name (str): The first name of the user.
-			last_name (str): The last name of the user.
-			email (str): The email address of the user.
-			password (str): The password of the user.
-			birthday (str): The birthday of the user.
-		"""
-		super().__init__()
-		if email in User.used_emails:
-			raise ValueError("Email already in use")
-		User.used_emails.add(email)
-		self.first_name = first_name
-		self.last_name = last_name
-		self.email = email
-		self.password = password
-		self.birthdate = datetime.strptime(birthdate, "%Y-%m-%d")
-		self.age = self.calculate_age()
-		self.places = []
-		self.reviews = []
+    Attributes:
+        used_emails (set): A set containing the used email addresses.
 
-	def calculate_age(self):
-		"""
-		Calculate the age of the user based on the birthdate.
-	
-		Returns:
-			int: The age of the user.
-		"""
-		today = datetime.today()
-		return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
+    Methods:
+        __init__(self, first_name, last_name, email, password, birthdate):
+            Initializes a new User object.
+        is_valid_email(email): Check if an email is valid.
+        calculate_age(self):
+            Calculate the age of the user based on the birthdate.
+        add_place(self, name, City, description, price_per_night, max_guest):
+            Adds a place to the user.
+        add_review(self, place, text, rating): Add a review for a place.
+        add_amenity(self, place, amenity): Adds an amenity to a place.
+        __str__(self): Returns a string representation of the User object.
+        update_name(self, new_name): Updates the name of the user.
+    """
 
-	def add_place(self, name, City, description, price_per_nigth, max_guest):
-			"""
-			Adds a place to the user.
+    used_emails = set()
 
-			Args:
-				name (str): The name of the place.
-				city (str): The city where the place is located.
-				description (str): A description of the place.
+    def __init__(self, first_name, last_name, email, password, birthdate):
+        """
+        Initializes a new User object.
 
-			Returns:
-				Place: The newly created place object.
+        Args:
+            first_name (str): The first name of the user.
+            last_name (str): The last name of the user.
+            email (str): The email address of the user.
+            password (str): The password of the user.
+            birthdate (str): The birthdate of the user.
+        """
+        super().__init__()
+        if not self.is_valid_email(email):
+            raise ValueError("Invalid email address")
+        if email in User.used_emails:
+            raise ValueError("Email already in use")
+        User.used_emails.add(email)
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
+        self.birthdate = datetime.strptime(birthdate, "%Y-%m-%d")
+        self.age = self.calculate_age()
+        self.places = []
+        self.reviews = []
 
-			"""
-			place = Place(name, City, self, description, price_per_nigth, max_guest)
-			self.places.append(place)
-			City.add_place(place)
-			return place
-	
-	def add_review(self, place, text, rating):
-		"""
-		Add a review for a place.
+    @staticmethod
+    def is_valid_email(email):
+        """
+        Check if an email is valid.
 
-		Args:
-			place (Place): The place to review.
-			text (str): The review text.
-			rating (float): The review rating.
+        Args:
+            email (str): The email to check.
 
-		Returns:
-			Review: The created review object.
+        Returns:
+            bool: True if the email is valid, False otherwise.
+        """
+        email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        return re.match(email_regex, email) is not None
 
-		Raises:
-			ValueError: If the user tries to review their own place.
-		"""
-		if place.host == self:
-			raise ValueError("A host cannot review their own place.")
-		review = Review(self, place, text, rating)
-		self.reviews.append(review)
-		place.add_review(review)
-		return review
-	
-	def add_amenity(self, place, amenity):
-		"""
-		Adds an amenity to a place.
+    def calculate_age(self):
+        """
+        Calculate the age of the user based on the birthdate.
 
-		Args:
-			place (Place): The place to add the amenity to.
-			amenity (Amenity): The amenity to add.
-		"""
-		place.add_amenity(amenity)
+        Returns:
+            int: The age of the user.
+        """
+        today = datetime.today()
+        return today.year - self.birthdate.year - \
+            ((today.month, today.day) <
+             (self.birthdate.month, self.birthdate.day))
 
-	def __str__(self):
-		"""
-		Returns a string representation of the User object.
+    def add_place(self, name, City, description, price_per_night, max_guest):
+        """
+        Adds a place to the user.
 
-		Returns:
-			str: A string representation of the User object.
-		"""
-		return f"User: {self.first_name} {self.last_name}"
-	
-	def update_name(self, new_name):
-		"""
-		Updates the name of the user.
-		"""
-		self.first_name = new_name
-		super().update()
+        Args:
+            name (str): The name of the place.
+            city (str): The city where the place is located.
+            description (str): A description of the place.
+            price_per_night (float): The price per night for the place.
+            max_guest (int): The maximum number of guests allowed in the place.
+
+        Returns:
+            Place: The newly created place object.
+        """
+        place = Place(name, City, self, description,
+                      price_per_night, max_guest)
+        self.places.append(place)
+        City.add_place(place)
+        return place
+
+    def add_review(self, place, text, rating):
+        """
+        Add a review for a place.
+
+        Args:
+            place (Place): The place to review.
+            text (str): The review text.
+            rating (float): The review rating.
+
+        Returns:
+            Review: The created review object.
+
+        Raises:
+            ValueError: If the user tries to review their own place.
+        """
+        if place.host == self:
+            raise ValueError("A host cannot review their own place.")
+        review = Review(self, place, text, rating)
+        self.reviews.append(review)
+        place.add_review(review)
+        return review
+
+    def add_amenity(self, place, amenity):
+        """
+        Adds an amenity to a place.
+
+        Args:
+            place (Place): The place to add the amenity to.
+            amenity (Amenity): The amenity to add.
+        """
+        place.add_amenity(amenity)
+
+    def __str__(self):
+        """
+        Returns a string representation of the User object.
+
+        Returns:
+            str: A string representation of the User object.
+        """
+        return f"User: {self.first_name} {self.last_name}"
+
+    def update_name(self, new_name):
+        """
+        Updates the name of the user.
+
+        Args:
+            new_name (str): The new name for the user.
+        """
+        self.first_name = new_name
+        super().update()
