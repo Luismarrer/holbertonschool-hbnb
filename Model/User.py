@@ -5,6 +5,7 @@ This module contains the User class.
 from Model.BaseModel import BaseModel
 from Model.Review import Review
 from Model.Place import Place
+from datetime import datetime
 
 class User(BaseModel):
 	"""
@@ -30,10 +31,20 @@ class User(BaseModel):
 		self.last_name = last_name
 		self.email = email
 		self.password = password
-		self.birthdate = birthdate
-		self.age = ''
+		self.birthdate = datetime.strptime(birthdate, "%Y-%m-%d")
+		self.age = self.calculate_age()
 		self.places = []
 		self.reviews = []
+
+	def calculate_age(self):
+		"""
+		Calculate the age of the user based on the birthdate.
+	
+		Returns:
+			int: The age of the user.
+		"""
+		today = datetime.today()
+		return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
 
 	def add_place(self, name, City, description, price_per_nigth, max_guest):
 			"""
