@@ -3,7 +3,8 @@
 This module contains the City class, which is a subclass of BaseModel.
 """
 
-from . import BaseModel
+from Model.BaseModel import BaseModel
+from Model.Country import Country
 
 
 class City(BaseModel):
@@ -11,7 +12,7 @@ class City(BaseModel):
 	This class represents a city.
 	"""
 
-	def __init__(self, name, country):
+	def __init__(self, name, Country):
 		"""
 		Initializes a new instance of the City class.
 
@@ -21,9 +22,9 @@ class City(BaseModel):
 		"""
 		super().__init__()
 		self.name = name
-		self.country = country
-		self.places = []
-		country.add_city(self)
+		self.country = Country
+		self.places = [] # List of places in the city.
+		Country.add_city(self)
 	
 	def add_place(self, place):
 		"""

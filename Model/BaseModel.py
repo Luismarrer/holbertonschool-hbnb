@@ -16,13 +16,13 @@ class BaseModel:
 		"""
 		self.id = uuid4()
 		self.created_at = datetime.now()
-		self.update_at = self.created_at
+		self.updated_at = self.created_at
 
 	def update(self):
 		"""
 		Updates the 'updated_at' attribute with the current datetime.
 		"""
-		self.update_at = datetime.now()
+		self.updated_at = datetime.now()
 
 	def __str__(self):
 		"""

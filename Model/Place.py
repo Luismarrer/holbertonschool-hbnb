@@ -3,7 +3,8 @@
 This module contains the definition of the Place class.
 """
 
-from . import BaseModel
+from Model.BaseModel import BaseModel
+from Model.City import City
 
 
 class Place(BaseModel):
@@ -11,7 +12,7 @@ class Place(BaseModel):
 	A class representing a place.
 	"""
 
-	def __init__(self, name, host, city, description, price_per_nigth, max_guest):
+	def __init__(self, name, City, User, description, price_per_nigth, max_guest):
 		"""
 		Initialize a new Place object.
 
@@ -19,16 +20,15 @@ class Place(BaseModel):
 			name (str): The name of the place.
 		"""
 		super().__init__()
-		self.host = host
-		self.city = city
+		self.host = User
+		self.city = City
 		self.name = name
 		self.description = description
 		self.price_per_nigth = price_per_nigth
 		self.max_guest = max_guest
 		self.amenities = []
 		self.reviews = []
-		host.add_place(self)
-		city.add_place(self)
+
 
 	def add_amenity(self, amenity):
 		"""

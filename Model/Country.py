@@ -16,7 +16,7 @@ class Country:
 			name (str): The name of the country.
 		"""
 		self.name = name
-		self.cities = []
+		self.cities = [] # List of cities in the country.
 	
 	def add_city(self, city):
 		"""

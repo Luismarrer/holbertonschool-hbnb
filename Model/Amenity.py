@@ -3,7 +3,7 @@
 This module defines the Amenity class, which represents an amenity in a hotel booking system.
 """
 
-from . import BaseModel
+from Model.BaseModel import BaseModel
 
 
 class Amenity(BaseModel):
@@ -26,7 +26,7 @@ class Amenity(BaseModel):
 
 	amenities_list = []
 
-	def __init__(self, name, description, author):
+	def __init__(self, name, description):
 		"""
 		Initializes a new instance of the Amenity class.
 
@@ -38,7 +38,6 @@ class Amenity(BaseModel):
 		super().__init__()
 		self.name = name
 		self.description = description
-		self.author = author
 		self.amenities_list.append(self)
 
 	def update_name(self, new_name):
