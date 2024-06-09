@@ -1,27 +1,25 @@
 #!/bin/python3
-import unittest
+import pytest
 from Model.User import User
-from Model.Place import Place
 """
 This module contains unit tests for user and place creation.
 """
 
-class TestUserCreation(unittest.TestCase):
-	def test_valid_user_creation(self):
-		"""
-		Test case for valid user creation.
-		"""
-		user = User(first_name="John", last_name="Doe", email="john.doe@example.com")
-		self.assertEqual(user.first_name, "John")
-		self.assertEqual(user.last_name, "Doe")
-		self.assertEqual(user.email, "john.doe@example.com")
-		
-	def test_invalid_user_creation(self):
-		"""
-		Test case for invalid user creation.
-		"""
-		with self.assertRaises(ValueError):
-			User(first_name="John", last_name="Doe", email="invalid-email")
+def test_valid_user_creation():
+    """
+    Test case for valid user creation.
+    """
+    user = User(first_name="John", last_name="Doe", email="john.doe@example.com")
+    assert user.first_name == "John"
+    assert user.last_name == "Doe"
+    assert user.email == "john.doe@example.com"
+
+def test_invalid_user_creation():
+    """
+    Test case for invalid user creation.
+    """
+    with pytest.raises(ValueError):
+        User(first_name="John", last_name="Doe", email="invalid-email")
 
 class TestPlaceCreation(unittest.TestCase):
 	def test_valid_place_creation(self):
@@ -41,6 +39,3 @@ class TestPlaceCreation(unittest.TestCase):
 		user = User(first_name="John", last_name="Doe", email="john.doe@example.com")
 		with self.assertRaises(ValueError):
 			user.create_place(name="", city="New York", description="A lovely apartment near Central Park.")
-
-if __name__ == '__main__':
-	unittest.main()

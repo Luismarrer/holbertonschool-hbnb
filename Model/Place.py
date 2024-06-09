@@ -21,18 +21,13 @@ class Place(BaseModel):
 		super().__init__()
 		self.host = host
 		self.city = city
-		self.types = types
 		self.name = name
 		self.description = description
-		self.address = address
-		self.latitude = latitude
-		self.longitude = longitude
-		self.numbers_rooms = numbers_rooms
-		self.numbers_bathrooms = numbers_bathrooms
 		self.price_per_nigth = price_per_nigth
 		self.max_guest = max_guest
 		self.amenities = []
 		self.reviews = []
+		host.add_place(self)
 		city.add_place(self)
 
 	def add_amenity(self, amenity):

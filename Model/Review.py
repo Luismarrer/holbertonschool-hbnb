@@ -28,3 +28,4 @@ class Review(BaseModel):
 		self.place = place
 		self.text = text
 		self.rating = rating
+		place.reviews.append(self)

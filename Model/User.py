@@ -9,6 +9,7 @@ class User(BaseModel):
 	"""
 	This class represents a user.
 	"""
+	used_emails = set()
 	def __init__(self, first_name, last_name, email, password, birthday):
 		"""
 		Initializes a new User object.
@@ -21,6 +22,9 @@ class User(BaseModel):
 			birthday (str): The birthday of the user.
 		"""
 		super().__init__()
+		if email in User.used_emails:
+			raise ValueError("Email already in use")
+		User.used_emails.add(email)
 		self.first_name = first_name
 		self.last_name = last_name
 		self.email = email
