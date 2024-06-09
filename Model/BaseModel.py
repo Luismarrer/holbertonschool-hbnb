@@ -1,21 +1,31 @@
 #!/bin/python3
 """
+This module contains the BaseModel class.
 """
 from uuid import uuid4
 from datetime import now
 
 
 class BaseModel:
-    """
-    """
-    def __init__(self):
-        """
-        """
-        self.ID = uuid4()
-        self.created_at = now()
-        self.update_at = self.created_at
+	"""
+	This class represents the base model for all other models in the project.
+	"""
+	def __init__(self):
+		"""
+		Initializes a new instance of the BaseModel class.
+		"""
+		self.id = uuid4()
+		self.created_at = now()
+		self.update_at = self.created_at
 
-    def update(self):
-        """
-        """
-        self.update_at = now()
+	def update(self):
+		"""
+		Updates the 'updated_at' attribute with the current datetime.
+		"""
+		self.update_at = now()
+
+	def __str__(self):
+		"""
+		Returns a string representation of the BaseModel instance.
+		"""
+		return f"ID: {self.id}, Created: {self.created_at}, Updated: {self.update_at}"
