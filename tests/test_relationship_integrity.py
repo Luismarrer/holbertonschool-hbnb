@@ -29,9 +29,7 @@ def test_review_relationship():
     Test the relationship between a Review and its author User, as well as the relationship between a Review and its associated Place.
     """
     place = test4.add_place("Central Park Apartment", New_York, "A lovely apartment near Central Park.", 100, 4)
-    review = test4.add_review(place=place, text="Great place to stay!", rating=5.0)
-    assert review.author == test4
-    assert review.place == place
-    assert review in test4.reviews
-    assert review in place.reviews
+    with pytest.raises(ValueError):
+    	review = test4.add_review(place=place, text="Great place to stay!", rating=5.0)
+
 

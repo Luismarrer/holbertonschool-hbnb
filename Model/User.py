@@ -55,13 +55,21 @@ class User(BaseModel):
 	
 	def add_review(self, place, text, rating):
 		"""
-		Adds a review to the user.
+		Add a review for a place.
 
 		Args:
 			place (Place): The place to review.
-			text (str): The text content of the review.
-			calification (int): The rating given to the review.
+			text (str): The review text.
+			rating (float): The review rating.
+
+		Returns:
+			Review: The created review object.
+
+		Raises:
+			ValueError: If the user tries to review their own place.
 		"""
+		if place.host == self:
+			raise ValueError("A host cannot review their own place.")
 		review = Review(self, place, text, rating)
 		self.reviews.append(review)
 		place.add_review(review)
