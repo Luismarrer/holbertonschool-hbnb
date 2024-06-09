@@ -3,7 +3,7 @@
 This module contains the BaseModel class.
 """
 from uuid import uuid4
-from datetime import now
+from datetime import datetime
 
 
 class BaseModel:
@@ -15,14 +15,14 @@ class BaseModel:
 		Initializes a new instance of the BaseModel class.
 		"""
 		self.id = uuid4()
-		self.created_at = now()
+		self.created_at = datetime.now()
 		self.update_at = self.created_at
 
 	def update(self):
 		"""
 		Updates the 'updated_at' attribute with the current datetime.
 		"""
-		self.update_at = now()
+		self.update_at = datetime.now()
 
 	def __str__(self):
 		"""
