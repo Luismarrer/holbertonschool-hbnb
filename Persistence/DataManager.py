@@ -2,7 +2,7 @@
 """
 This module contains the DataManager class.
 """
-from . import IPersistenceManager
+from Persistence.IPersistenceManager import IPersistenceManager
 
 
 class DataManager(IPersistenceManager):

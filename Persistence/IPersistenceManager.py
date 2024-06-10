@@ -20,41 +20,41 @@ class IPersistenceManager(ABC):
     @abstractmethod
     def save(self, entity):
         """
-        Saves an entity to the persistence manager.
+        Save an entity.
 
         Args:
-            entity (object): The entity to be saved.
+            entity: The entity to save.
         """
         pass
 
     @abstractmethod
     def get(self, entity_id, entity_type):
         """
-        Retrieves an entity from the persistence manager.
+        Retrieve an entity.
 
         Args:
-            entity_id (int): The ID of the entity to be retrieved.
-            entity_type (str): The type of the entity to be retrieved.
+            entity_id: The ID of the entity to retrieve.
+            entity_type: The type of the entity to retrieve.
         """
         pass
 
     @abstractmethod
     def update(self, entity):
         """
-        Updates an entity in the persistence manager.
+        Update an entity.
 
         Args:
-            entity (object): The entity to be updated.
+            entity: The entity to update.
         """
         pass
 
     @abstractmethod
     def delete(self, entity_id, entity_type):
         """
-        Deletes an entity from the persistence manager.
+        Delete an entity.
 
         Args:
-            entity_id (int): The ID of the entity to be deleted.
-            entity_type (str): The type of the entity to be deleted.
+            entity_id: The ID of the entity to delete.
+            entity_type: The type of the entity to delete.
         """
         pass
