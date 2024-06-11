@@ -14,15 +14,15 @@ class BaseModel:
         """
         Initializes a new instance of the BaseModel class.
         """
-        self.id = uuid4()
-        self.created_at = datetime.now()
+        self.id = str(uuid4())
+        self.created_at = str(datetime.now())
         self.updated_at = self.created_at
 
     def update(self):
         """
         Updates the 'updated_at' attribute with the current datetime.
         """
-        self.updated_at = datetime.now()
+        self.updated_at = str(datetime.now())
 
     def __str__(self):
         """

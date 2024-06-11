@@ -2,6 +2,8 @@
 """
 This module contains the DataManager class.
 """
+import os
+import json
 from Persistence.IPersistenceManager import IPersistenceManager
 
 
@@ -14,6 +16,10 @@ class DataManager(IPersistenceManager):
         IPersistenceManager (type):
             The base persistence manager class.
     """
+    def __init__(self, storage_path):
+        self.storage_path = storage_path
+        if not os.path.exists(storage_path):
+            os.makedirs(storage_path)
 
     def save(self, entity):
         """
@@ -22,6 +28,9 @@ class DataManager(IPersistenceManager):
         Args:
             entity (type): The entity to be saved.
         """
+        # Logic to save entity to storage
+        with open(f"{self.storage_path}/{type(entity).__name__}.json", 'a') as f:
+            json.dump(entity.__dict__, f, indent=4)
 
     def get(self, entity_id, entity_type):
         """
@@ -35,7 +44,9 @@ class DataManager(IPersistenceManager):
             The retrieved entity.
         """
         # Logic to retrieve an entity based on ID and type
-        pass
+        with open(f"{self.storage_path}/{entity_type.__name__}.json", 'r') as f:
+            data = json.load(f)
+            return data
 
     def update(self, entity):
         """
@@ -45,7 +56,7 @@ class DataManager(IPersistenceManager):
             entity (type): The entity to be updated.
         """
         # Logic to update an entity in storage
-        pass
+        self.save(entity)
 
     def delete(self, entity_id, entity_type):
         """
@@ -56,4 +67,4 @@ class DataManager(IPersistenceManager):
             entity_type (type): The type of the entity.
         """
         # Logic to delete an entity from storage
-        pass
+        os.remove(f"{self.storage_path}/{entity_id}_{entity_type.__name__}.json")

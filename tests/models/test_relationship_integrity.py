@@ -24,7 +24,7 @@ def test_place_host_relationship():
     """
     place = test4.add_place("San Juan Apartment 4", San_Juan,
                             "A lovely apartment near Central Park.", 100, 4)
-    assert place.host == test4
+    assert place.host == test4.id
     assert place in test4.places
 
 

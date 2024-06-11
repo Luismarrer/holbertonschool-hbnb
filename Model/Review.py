@@ -2,7 +2,7 @@
 """
 This module contains the Review class.
 """
-from Model.BaseModel import BaseModel
+from .BaseModel import BaseModel
 
 
 class Review(BaseModel):
@@ -24,8 +24,8 @@ class Review(BaseModel):
             calification (int): The rating given to the review.
         """
         super().__init__()
-        self.author = author
-        self.place = place
+        self.author = author.name
+        self.place = place.name
         self.text = text
         self.rating = rating
         place.reviews.append(self)

@@ -2,12 +2,11 @@
 """
 This module contains the User class.
 """
-from Model.BaseModel import BaseModel
-from Model.Review import Review
-from Model.Place import Place
+from .BaseModel import BaseModel
+from .Review import Review
+from .Place import Place
 from datetime import datetime
 import re
-
 
 class User(BaseModel):
     """
@@ -51,10 +50,11 @@ class User(BaseModel):
         User.used_emails.add(email)
         self.first_name = first_name
         self.last_name = last_name
+        self.name = first_name + " " + last_name
         self.email = email
         self.password = password
-        self.birthdate = datetime.strptime(birthdate, "%Y-%m-%d")
-        self.age = self.calculate_age()
+        self.birthdate = birthdate
+        self.age = str(self.calculate_age())
         self.places = []
         self.reviews = []
 
@@ -79,10 +79,11 @@ class User(BaseModel):
         Returns:
             int: The age of the user.
         """
+        tmp_calc = datetime.strptime(self.birthdate, "%Y-%m-%d")
         today = datetime.today()
-        return today.year - self.birthdate.year - \
+        return today.year - tmp_calc.year - \
             ((today.month, today.day) <
-             (self.birthdate.month, self.birthdate.day))
+             (tmp_calc.month, tmp_calc.day))
 
     def add_place(self, name, City, description, price_per_night, max_guest):
         """
@@ -98,7 +99,7 @@ class User(BaseModel):
         Returns:
             Place: The newly created place object.
         """
-        place = Place(name, City, self, description,
+        place = Place(name, City, self.id, description,
                       price_per_night, max_guest)
         self.places.append(place)
         City.add_place(place)
@@ -119,7 +120,7 @@ class User(BaseModel):
         Raises:
             ValueError: If the user tries to review their own place.
         """
-        if place.host == self:
+        if place.host == self.id:
             raise ValueError("A host cannot review their own place.")
         review = Review(self, place, text, rating)
         self.reviews.append(review)

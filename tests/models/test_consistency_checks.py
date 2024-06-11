@@ -12,14 +12,6 @@ user = User(first_name="John", last_name="Doe", email="john.doe2@example.com",
             password="password", birthdate="1990-01-01")
 
 
-def test_created_at():
-    """
-    Test if the 'created_at' attribute of a
-    User instance is an instance of datetime.
-    """
-    assert isinstance(user.created_at, datetime)
-
-
 def test_updated_at():
     """
     Test if the 'updated_at' attribute of a User instance

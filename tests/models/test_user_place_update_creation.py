@@ -42,8 +42,8 @@ def test_valid_place_creation():
                             "A lovely apartment near Central Park.",
                             100, 2)
     assert place.name == "San Juan Apartment"
-    assert place.city == San_Juan
-    assert place.host == test6
+    assert place.city == San_Juan.name
+    assert place.host == test6.id
 
 
 def test_invalid_place_creation():

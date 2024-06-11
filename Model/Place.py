@@ -3,7 +3,7 @@
 This module contains the definition of the Place class.
 """
 
-from Model.BaseModel import BaseModel
+from .BaseModel import BaseModel
 
 
 class Place(BaseModel):
@@ -11,7 +11,7 @@ class Place(BaseModel):
     A class representing a place.
     """
 
-    def __init__(self, name, City, User, description,
+    def __init__(self, name, city, User, description,
                  price_per_nigth, max_guest):
         """
         Initialize a new Place object.
@@ -19,12 +19,12 @@ class Place(BaseModel):
         Args:
             name (str): The name of the place.
         """
-        if not name or not City or not User or not description\
+        if not name or not city or not User or not description\
                 or not price_per_nigth or not max_guest:
             raise ValueError("Invalid arguments")
         super().__init__()
         self.host = User
-        self.city = City
+        self.city = city.name
         self.name = name
         self.description = description
         self.price_per_nigth = price_per_nigth

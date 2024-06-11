@@ -41,4 +41,4 @@ def test_host_assignment_rule():
     place2 = Luis.add_place("San Juan Studio", San_Juan,
                             "A cozy studio in Santurce.",
                             80, 2)
-    assert place1.host == Luis
+    assert place1.host == Luis.id
