@@ -8,6 +8,7 @@ from .Place import Place
 from datetime import datetime
 import re
 
+
 class User(BaseModel):
     """
     This class represents a user.

@@ -22,15 +22,22 @@ class DataManager(IPersistenceManager):
             os.makedirs(storage_path)
 
     def save(self, entity):
-        """
-        Save the given entity to storage.
+        # Load existing data
+        if os.path.exists(f"{self.storage_path}/\
+                          {type(entity).__name__}.json"):
+            with open(f"{self.storage_path}/\
+                      {type(entity).__name__}.json", 'r') as f:
+                data = json.load(f)
+        else:
+            data = []
 
-        Args:
-            entity (type): The entity to be saved.
-        """
-        # Logic to save entity to storage
-        with open(f"{self.storage_path}/{type(entity).__name__}.json", 'a') as f:
-            json.dump(entity.__dict__, f, indent=4)
+        # Update data with new entity
+        data.append(entity.__dict__)
+
+        # Save updated data to storage
+        with open(f"{self.storage_path}/\
+                  {type(entity).__name__}.json", 'w') as f:
+            json.dump(data, f, indent=4)
 
     def get(self, entity_id, entity_type):
         """
@@ -44,7 +51,8 @@ class DataManager(IPersistenceManager):
             The retrieved entity.
         """
         # Logic to retrieve an entity based on ID and type
-        with open(f"{self.storage_path}/{entity_type.__name__}.json", 'r') as f:
+        with open(f"{self.storage_path}/\
+                  {entity_type.__name__}.json", 'r') as f:
             data = json.load(f)
             return data
 
@@ -67,4 +75,5 @@ class DataManager(IPersistenceManager):
             entity_type (type): The type of the entity.
         """
         # Logic to delete an entity from storage
-        os.remove(f"{self.storage_path}/{entity_id}_{entity_type.__name__}.json")
+        os.remove(f"{self.storage_path}/\
+                  {entity_id}_{entity_type.__name__}.json")
