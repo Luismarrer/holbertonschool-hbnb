@@ -5,4 +5,4 @@ https://lucid.app/lucidchart/ead10c62-227f-4a91-a6b9-17bb263cfada/edit?viewport_
 
 `pip instal pytest`
 
-Authors: Luis E Marrero, Angel Carrasquillo
+Authors: Luis E Marrero

@@ -10,11 +10,10 @@ This module defines the following routes:
 - DELETE /reviews/<review_id>: Delete a specific review by its ID.
 """
 
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from Model.Review import Review
 from Persistence.DataManager import DataManager
-
-reviews_bp = Blueprint('reviews', __name__)
+from .blueprints import reviews_bp
 
 
 @reviews_bp.route('/places/<place_id>/reviews', methods=['POST'])

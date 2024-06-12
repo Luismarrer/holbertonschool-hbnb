@@ -2,15 +2,14 @@
 This module contains the routes for handling country-related requests.
 """
 
-from flask import Blueprint, jsonify
+from flask import jsonify
 from Model.Country import Country
 from Model.City import City
 from Persistence.DataManager import DataManager
+from .blueprints import countries_bp
 
-countries_bp = Blueprint('countries', __name__)
 
-
-@countries_bp.route('/countries', methods=['GET'])
+@countries_bp.route('/', methods=['GET'])
 def get_countries():
     """
     Get all countries.
@@ -22,7 +21,7 @@ def get_countries():
     return jsonify([country.to_dict() for country in countries]), 200
 
 
-@countries_bp.route('/countries/<country_code>', methods=['GET'])
+@countries_bp.route('/<country_code>', methods=['GET'])
 def get_country(country_code):
     """
     Get a specific country by country code.
@@ -40,7 +39,7 @@ def get_country(country_code):
     return jsonify(country.to_dict()), 200
 
 
-@countries_bp.route('/countries/<country_code>/cities', methods=['GET'])
+@countries_bp.route('/<country_code>/cities', methods=['GET'])
 def get_cities_by_country(country_code):
     """
     Get all cities in a specific country.

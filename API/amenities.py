@@ -8,14 +8,13 @@ Routes:
 - PUT /amenities/<amenity_id>: Update details of a specific amenity.
 - DELETE /amenities/<amenity_id>: Delete a specific amenity.
 """
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from Model.Amenity import Amenity
 from Persistence.DataManager import DataManager
+from .blueprints import amenities_bp
 
-amenities_bp = Blueprint('amenities', __name__)
 
-
-@amenities_bp.route('/amenities', methods=['POST'])
+@amenities_bp.route('/', methods=['POST'])
 def create_amenity():
     """
     Create a new amenity.
@@ -35,7 +34,7 @@ def create_amenity():
     return jsonify(amenity.to_dict()), 201
 
 
-@amenities_bp.route('/amenities', methods=['GET'])
+@amenities_bp.route('/', methods=['GET'])
 def get_amenities():
     """
     Get a list of all amenities.
@@ -47,7 +46,7 @@ def get_amenities():
     return jsonify([amenity.to_dict() for amenity in amenities]), 200
 
 
-@amenities_bp.route('/amenities/<amenity_id>', methods=['GET'])
+@amenities_bp.route('/<amenity_id>', methods=['GET'])
 def get_amenity(amenity_id):
     """
     Get details of a specific amenity.
@@ -64,7 +63,7 @@ def get_amenity(amenity_id):
     return jsonify(amenity.to_dict()), 200
 
 
-@amenities_bp.route('/amenities/<amenity_id>', methods=['PUT'])
+@amenities_bp.route('/<amenity_id>', methods=['PUT'])
 def update_amenity(amenity_id):
     """
     Update details of a specific amenity.
@@ -87,7 +86,7 @@ def update_amenity(amenity_id):
     return jsonify(amenity.to_dict()), 200
 
 
-@amenities_bp.route('/amenities/<amenity_id>', methods=['DELETE'])
+@amenities_bp.route('/<amenity_id>', methods=['DELETE'])
 def delete_amenity(amenity_id):
     """
     Delete a specific amenity.

@@ -11,11 +11,10 @@ Routes:
 from flask import Blueprint, request, jsonify
 from Model.City import City
 from Persistence.DataManager import DataManager
+from .blueprints import cities_bp
 
-cities_bp = Blueprint('cities', __name__)
 
-
-@cities_bp.route('/cities', methods=['POST'])
+@cities_bp.route('/', methods=['POST'])
 def create_city():
     """
     Create a new city.
@@ -36,7 +35,7 @@ def create_city():
     return jsonify(city.to_dict()), 201
 
 
-@cities_bp.route('/cities', methods=['GET'])
+@cities_bp.route('/', methods=['GET'])
 def get_cities():
     """
     Get all cities.
@@ -48,7 +47,7 @@ def get_cities():
     return jsonify([city.to_dict() for city in cities]), 200
 
 
-@cities_bp.route('/cities/<city_id>', methods=['GET'])
+@cities_bp.route('/<city_id>', methods=['GET'])
 def get_city(city_id):
     """
     Get a specific city by ID.
@@ -65,7 +64,7 @@ def get_city(city_id):
     return jsonify(city.to_dict()), 200
 
 
-@cities_bp.route('/cities/<city_id>', methods=['PUT'])
+@cities_bp.route('/<city_id>', methods=['PUT'])
 def update_city(city_id):
     """
     Update a specific city by ID.
@@ -88,7 +87,7 @@ def update_city(city_id):
     return jsonify(city.to_dict()), 200
 
 
-@cities_bp.route('/cities/<city_id>', methods=['DELETE'])
+@cities_bp.route('/<city_id>', methods=['DELETE'])
 def delete_city(city_id):
     """
     Delete a specific city by ID.

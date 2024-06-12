@@ -9,14 +9,12 @@ Endpoints:
 - DELETE /places/<place_id>: Delete a specific place by ID.
 """
 
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from Model.Place import Place
 from Persistence.DataManager import DataManager
+from .blueprints import places_bp
 
-places_bp = Blueprint('places', __name__)
-
-
-@places_bp.route('/places', methods=['POST'])
+@places_bp.route('/', methods=['POST'])
 def create_place():
     """
     Create a new place.
@@ -51,7 +49,7 @@ def create_place():
     return jsonify(place.to_dict()), 201
 
 
-@places_bp.route('/places', methods=['GET'])
+@places_bp.route('/', methods=['GET'])
 def get_places():
     """
     Get all places.
@@ -63,7 +61,7 @@ def get_places():
     return jsonify([place.to_dict() for place in places]), 200
 
 
-@places_bp.route('/places/<place_id>', methods=['GET'])
+@places_bp.route('/<place_id>', methods=['GET'])
 def get_place(place_id):
     """
     Get a specific place by ID.
@@ -82,7 +80,7 @@ def get_place(place_id):
     return jsonify(place.to_dict()), 200
 
 
-@places_bp.route('/places/<place_id>', methods=['PUT'])
+@places_bp.route('/<place_id>', methods=['PUT'])
 def update_place(place_id):
     """
     Update a specific place by ID.
@@ -121,7 +119,7 @@ def update_place(place_id):
     return jsonify(place.to_dict()), 200
 
 
-@places_bp.route('/places/<place_id>', methods=['DELETE'])
+@places_bp.route('/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
     """
     Delete a specific place by ID.

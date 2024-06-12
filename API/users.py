@@ -9,14 +9,13 @@ The users module provides the following endpoints:
 - DELETE /users/<user_id>: Delete a specific user.
 """
 
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from Model.User import User
 from Persistence.DataManager import DataManager
+from .blueprints import users_bp
 
-users_bp = Blueprint('users', __name__)
 
-
-@users_bp.route('/users', methods=['POST'])
+@users_bp.route('/', methods=['POST'])
 def create_user():
     """
     Create a new user.
@@ -25,17 +24,17 @@ def create_user():
         A JSON response containing the created user's information.
     """
     data = request.get_json()
-    if 'email' not in data or 'first_name' not in data\
-       or 'last_name' not in data:
+    if 'email' not in data or 'first_name' not in data \
+            or 'last_name' not in data:
         return jsonify({'error': 'Missing fields'}), 400
 
     user = User(email=data['email'], first_name=data['first_name'],
                 last_name=data['last_name'])
     DataManager.save(user)
     return jsonify(user.to_dict()), 201
+    
 
-
-@users_bp.route('/users', methods=['GET'])
+@users_bp.route('/', methods=['GET'])
 def get_users():
     """
     Get all users.
@@ -43,11 +42,11 @@ def get_users():
     Returns:
         A JSON response containing a list of all users' information.
     """
-    users = DataManager.get(User)
-    return jsonify([user.to_dict() for user in users]), 200
+    # users = DataManager.get(User)
+    # return jsonify([user.to_dict() for user in users]), 200
+    return "Hello World"
 
-
-@users_bp.route('/users/<user_id>', methods=['GET'])
+@users_bp.route('/<user_id>', methods=['GET'])
 def get_user(user_id):
     """
     Get a specific user.
@@ -65,7 +64,7 @@ def get_user(user_id):
     return jsonify(user.to_dict()), 200
 
 
-@users_bp.route('/users/<user_id>', methods=['PUT'])
+@users_bp.route('/<user_id>', methods=['PUT'])
 def update_user(user_id):
     """
     Update a specific user.
