@@ -4,9 +4,10 @@ This module contains the BaseModel class.
 """
 from uuid import uuid4
 from datetime import datetime
+from Persistence.DataManager import DataManager
 
 
-class BaseModel:
+class BaseModel(DataManager):
     """
     This class represents the base model for all other models in the project.
     """
@@ -17,16 +18,11 @@ class BaseModel:
         self.id = str(uuid4())
         self.created_at = str(datetime.now())
         self.updated_at = self.created_at
-
-    def update(self):
-        """
-        Updates the 'updated_at' attribute with the current datetime.
-        """
-        self.updated_at = str(datetime.now())
-
-    def __str__(self):
-        """
-        Returns a string representation of the BaseModel instance.
-        """
-        return f"ID: {self.id}, Created: {self.created_at},\
-        Updated: {self.update_at}"
+        super().save(self)
+        
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+                self.updated_at = datetime.now()
+        super().update(self)

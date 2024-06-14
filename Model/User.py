@@ -32,7 +32,7 @@ class User(BaseModel):
 
     used_emails = set()
 
-    def __init__(self, first_name, last_name, email, password, birthdate):
+    def __init__(self, email, first_name, last_name):
         """
         Initializes a new User object.
 
@@ -43,21 +43,18 @@ class User(BaseModel):
             password (str): The password of the user.
             birthdate (str): The birthdate of the user.
         """
-        super().__init__()
         if not self.is_valid_email(email):
             raise ValueError("Invalid email address")
         if email in User.used_emails:
             raise ValueError("Email already in use")
         User.used_emails.add(email)
+        self.email = email
         self.first_name = first_name
         self.last_name = last_name
-        self.name = first_name + " " + last_name
-        self.email = email
-        self.password = password
-        self.birthdate = birthdate
-        self.age = str(self.calculate_age())
-        self.places = []
         self.reviews = []
+        self.places = []
+        super().__init__()
+
 
     @staticmethod
     def is_valid_email(email):
@@ -72,21 +69,8 @@ class User(BaseModel):
         """
         email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         return re.match(email_regex, email) is not None
-
-    def calculate_age(self):
-        """
-        Calculate the age of the user based on the birthdate.
-
-        Returns:
-            int: The age of the user.
-        """
-        tmp_calc = datetime.strptime(self.birthdate, "%Y-%m-%d")
-        today = datetime.today()
-        return today.year - tmp_calc.year - \
-            ((today.month, today.day) <
-             (tmp_calc.month, tmp_calc.day))
-
-    def add_place(self, name, City, description, price_per_night, max_guest):
+    
+    def add_place(self, name, description, number_of_rooms, number_of_bathrooms, max_guest, price_per_night, latitude, longitude, city):
         """
         Adds a place to the user.
 
@@ -100,8 +84,7 @@ class User(BaseModel):
         Returns:
             Place: The newly created place object.
         """
-        place = Place(name, City, self.id, description,
-                      price_per_night, max_guest)
+        place = Place(self.id, name, description, number_of_rooms, number_of_bathrooms, max_guest, price_per_night, latitude, longitude, city.id)
         self.places.append(place)
         City.add_place(place)
         return place

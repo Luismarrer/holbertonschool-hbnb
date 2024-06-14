@@ -18,12 +18,10 @@ def test_unique_email_constraint():
     the User model has a unique constraint.
     """
     John = User(first_name="John", last_name="Doe",
-                email="john.doe@example.com", password="password",
-                birthdate="1990-01-01")
+                email="john.doe@example.com")
     with pytest.raises(Exception):
         John2 = User(first_name="Jane", last_name="Doe",
-                     email="john.doe@example.com", password="password",
-                     birthdate="1990-01-01")
+                     email="john.doe@example.com")
 
 
 def test_host_assignment_rule():
@@ -32,8 +30,7 @@ def test_host_assignment_rule():
     Place model is correctly assigned to the user.
     """
     Luis = User(first_name="Luis", last_name="Luis",
-                email="luis.luis1@example.com",
-                password="password", birthdate="1990-01-01")
+                email="luis.luis1@example.com")
     place1 = Luis.add_place("San Juan Apartment",
                             San_Juan,
                             "A lovely apartment near Morro.",

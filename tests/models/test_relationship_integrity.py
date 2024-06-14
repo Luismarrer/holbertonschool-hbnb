@@ -12,8 +12,7 @@ integrity of relationships between models.
 """
 Puerto_Rico = Country("Puerto Rico")
 San_Juan = City("San Juan", Puerto_Rico)
-test4 = User(first_name="John", last_name="Doe", email="john.doe3@example.com",
-             password="password", birthdate="1990-01-01")
+test4 = User(first_name="John", last_name="Doe", email="john.doe3@example.com")
 USA = Country("United States")
 New_York = City("New York", USA)
 

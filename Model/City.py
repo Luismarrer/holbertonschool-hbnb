@@ -19,11 +19,11 @@ class City(BaseModel):
             name (str): The name of the city.
             country (str): The country where the city is located.
         """
-        super().__init__()
         self.name = name
         self.country = Country.name
         self.places = []  # List of places in the city.
         Country.add_city(self)
+        super().__init__()
 
     def add_place(self, place):
         """

@@ -8,8 +8,7 @@ This module contains unit tests to check
 the consistency of the User model.
 """
 Puerto_Rico = Country("Puerto Rico")
-user = User(first_name="John", last_name="Doe", email="john.doe2@example.com",
-            password="password", birthdate="1990-01-01")
+user = User(first_name="John", last_name="Doe", email="john.doe2@example.com")
 
 
 def test_updated_at():
@@ -18,5 +17,5 @@ def test_updated_at():
     is updated after calling the 'update_name' method.
     """
     old_updated_at = user.updated_at
-    user.update_name("Johnny")
+    user.update(first_name="Johnny")
     assert user.updated_at != old_updated_at
