@@ -14,7 +14,7 @@ class Review(BaseModel):
         text (str): The text content of the review.
         calification (int): The rating given to the review.
     """
-    def __init__(self, author, place, text, rating):
+    def __init__(self, place_id, user_id, rating, comment):
         """
         Initializes a new instance of the Review class.
 
@@ -23,9 +23,22 @@ class Review(BaseModel):
             text (str): The text content of the review.
             calification (int): The rating given to the review.
         """
-        super().__init__()
-        self.author = author.name
-        self.place = place.name
-        self.text = text
+        self.place_id = place_id
+        self.user_id = user_id
         self.rating = rating
-        place.reviews.append(self)
+        self.comment = comment
+        super().__init__()
+
+    def update_info(self, rating=None, comment=None):
+        """
+        Updates the review's information.
+
+        Args:
+            rating (int): The new rating of the review.
+            comment (str): The new text content of the review.
+        """
+        if rating is not None:
+            self.rating = rating
+        if comment is not None:
+            self.comment = comment
+        self.update()

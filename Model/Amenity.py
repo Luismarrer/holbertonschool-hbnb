@@ -4,6 +4,7 @@ This module defines the Amenity class, which represents
 an amenity in a hotel booking system.
 """
 
+
 from Model.BaseModel import BaseModel
 
 
@@ -14,19 +15,9 @@ class Amenity(BaseModel):
     Attributes:
         name (str): The name of the amenity.
         description (str): The description of the amenity.
-        amenities_list (list): A list of all amenities.
-
-    Methods:
-        __init__(self, name, description, author):
-            Initializes a new instance of the Amenity class.
-        update_name(self, new_name): Updates the name of the amenity.
-        update_description(self, new_description):
-            Updates the description of the amenity.
-        select(self): Selects the amenity.
-        delete(self): Deletes the amenity.
+        places (list): A list of all places associated with this amenity.
     """
 
-    amenities_list = []
 
     def __init__(self, name, description):
         """
@@ -37,10 +28,10 @@ class Amenity(BaseModel):
             description (str): The description of the amenity.
 
         """
-        super().__init__()
         self.name = name
         self.description = description
-        self.amenities_list.append(self)
+        self.places = []
+        super().__init__()
 
     def update_name(self, new_name):
         """
@@ -50,6 +41,7 @@ class Amenity(BaseModel):
             new_name (str): The new name of the amenity.
         """
         self.name = new_name
+        self.update()
 
     def update_description(self, new_description):
         """
@@ -59,22 +51,26 @@ class Amenity(BaseModel):
             new_description (str): The new description of the amenity.
         """
         self.description = new_description
+        self.update()
 
-    def select(self):
+    def update_info(self, new_name=None, new_description=None):
         """
-        Selects the amenity.
-
-        Returns:
-            Amenity: The selected amenity.
+        Updates the amenity's information.
+        
+        Args:
+            new_name (str): The new name of the amenity.
+            new_description (str): The new description of the amenity.
         """
-        return self
+        if new_name:
+            self.name = new_name
+        if new_description:
+            self.description = new_description
+        self.update()
 
     def delete(self):
         """
-        Deletes the amenity.
+        Deletes the amenity instance.
         """
-        if self in Amenity.amenities_list:
-            Amenity.amenities_list.remove(self)
-            print("Amenity has been deleted.")
-        else:
-            print("Amenity not found")
+        for place in self.places:
+            if self in place.amenities:
+                place.amenities.remove(self)

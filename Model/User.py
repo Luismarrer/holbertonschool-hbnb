@@ -2,10 +2,12 @@
 """
 This module contains the User class.
 """
+
+
 from .BaseModel import BaseModel
 from .Review import Review
 from .Place import Place
-from datetime import datetime
+from .Amenity import Amenity
 import re
 
 
@@ -15,21 +17,7 @@ class User(BaseModel):
 
     Attributes:
         used_emails (set): A set containing the used email addresses.
-
-    Methods:
-        __init__(self, first_name, last_name, email, password, birthdate):
-            Initializes a new User object.
-        is_valid_email(email): Check if an email is valid.
-        calculate_age(self):
-            Calculate the age of the user based on the birthdate.
-        add_place(self, name, City, description, price_per_night, max_guest):
-            Adds a place to the user.
-        add_review(self, place, text, rating): Add a review for a place.
-        add_amenity(self, place, amenity): Adds an amenity to a place.
-        __str__(self): Returns a string representation of the User object.
-        update_name(self, new_name): Updates the name of the user.
     """
-
     used_emails = set()
 
     def __init__(self, email, first_name, last_name):
@@ -40,14 +28,13 @@ class User(BaseModel):
             first_name (str): The first name of the user.
             last_name (str): The last name of the user.
             email (str): The email address of the user.
-            password (str): The password of the user.
-            birthdate (str): The birthdate of the user.
         """
         if not self.is_valid_email(email):
             raise ValueError("Invalid email address")
         if email in User.used_emails:
             raise ValueError("Email already in use")
         User.used_emails.add(email)
+
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
@@ -70,72 +57,59 @@ class User(BaseModel):
         email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         return re.match(email_regex, email) is not None
     
-    def add_place(self, name, description, number_of_rooms, number_of_bathrooms, max_guest, price_per_night, latitude, longitude, city):
-        """
-        Adds a place to the user.
-
-        Args:
-            name (str): The name of the place.
-            city (str): The city where the place is located.
-            description (str): A description of the place.
-            price_per_night (float): The price per night for the place.
-            max_guest (int): The maximum number of guests allowed in the place.
-
-        Returns:
-            Place: The newly created place object.
-        """
-        place = Place(self.id, name, description, number_of_rooms, number_of_bathrooms, max_guest, price_per_night, latitude, longitude, city.id)
+    def add_place(self, name, description, address, number_of_rooms, number_of_bathrooms, max_guest, price_per_night, latitude, longitude, city):
+        place = Place(self.id, name, description, address, number_of_rooms, number_of_bathrooms, max_guest, price_per_night, latitude, longitude, city.id)
         self.places.append(place)
-        City.add_place(place)
+        city.places.append(place)
         return place
 
+
     def add_review(self, place, text, rating):
-        """
-        Add a review for a place.
-
-        Args:
-            place (Place): The place to review.
-            text (str): The review text.
-            rating (float): The review rating.
-
-        Returns:
-            Review: The created review object.
-
-        Raises:
-            ValueError: If the user tries to review their own place.
-        """
-        if place.host == self.id:
-            raise ValueError("A host cannot review their own place.")
-        review = Review(self, place, text, rating)
+        review = Review(place_id=place.id, user_id=self.id, rating=rating, comment=text)
         self.reviews.append(review)
-        place.add_review(review)
+        place.reviews.append(review)
         return review
 
-    def add_amenity(self, place, amenity):
-        """
-        Adds an amenity to a place.
 
+   #  def add_amenity(self, place, amenity):
+
+
+    def update_name(self, new_first_name=None, new_last_name=None):
+        """
+        Updates the first and last name of the user.
+        """
+        if new_first_name:
+            self.first_name = new_first_name
+        if new_last_name:
+            self.last_name = new_last_name
+        self.update()
+
+    def update_email(self, new_email):
+        """
+        Updates the email of the user.
+        """
+        if not self.is_valid_email(new_email):
+            raise ValueError("Invalid email address")
+        if new_email in User.used_emails:
+            raise ValueError("Email already in use")
+        User.used_emails.remove(self.email)
+        User.used_emails.add(new_email)
+        self.email = new_email
+        self.update()
+
+    def update_info(self, new_first_name=None, new_last_name=None, new_email=None):
+        """
+        Updates the user's information.
+        
         Args:
-            place (Place): The place to add the amenity to.
-            amenity (Amenity): The amenity to add.
+            new_first_name (str): The new first name of the user.
+            new_last_name (str): The new last name of the user.
+            new_email (str): The new email address of the user.
         """
-        place.add_amenity(amenity)
-
-    def __str__(self):
-        """
-        Returns a string representation of the User object.
-
-        Returns:
-            str: A string representation of the User object.
-        """
-        return f"User: {self.first_name} {self.last_name}"
-
-    def update_name(self, new_name):
-        """
-        Updates the name of the user.
-
-        Args:
-            new_name (str): The new name for the user.
-        """
-        self.first_name = new_name
-        super().update()
+        if new_first_name:
+            self.first_name = new_first_name
+        if new_last_name:
+            self.last_name = new_last_name
+        if new_email:
+            self.update_email(new_email)
+        self.update()
