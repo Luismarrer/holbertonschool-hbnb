@@ -6,6 +6,7 @@ an amenity in a hotel booking system.
 
 
 from Model.BaseModel import BaseModel
+from Persistence.DataManager import DataManager
 
 
 class Amenity(BaseModel):
@@ -19,7 +20,7 @@ class Amenity(BaseModel):
     """
 
 
-    def __init__(self, name, description):
+    def __init__(self, name):
         """
         Initializes a new instance of the Amenity class.
 
@@ -29,31 +30,11 @@ class Amenity(BaseModel):
 
         """
         self.name = name
-        self.description = description
         self.places = []
         super().__init__()
 
-    def update_name(self, new_name):
-        """
-        Updates the name of the amenity.
 
-        Args:
-            new_name (str): The new name of the amenity.
-        """
-        self.name = new_name
-        self.update()
-
-    def update_description(self, new_description):
-        """
-        Updates the description of the amenity.
-
-        Args:
-            new_description (str): The new description of the amenity.
-        """
-        self.description = new_description
-        self.update()
-
-    def update_info(self, new_name=None, new_description=None):
+    def update_info(self, new_name=None):
         """
         Updates the amenity's information.
         
@@ -63,8 +44,6 @@ class Amenity(BaseModel):
         """
         if new_name:
             self.name = new_name
-        if new_description:
-            self.description = new_description
         self.update()
 
     def delete(self):
@@ -74,3 +53,21 @@ class Amenity(BaseModel):
         for place in self.places:
             if self in place.amenities:
                 place.amenities.remove(self)
+
+    @staticmethod
+    def amenity_exists(name):
+        """
+        Checks if an amenity with the given name already exists.
+
+        Args:
+            name (str): The name of the amenity.
+
+        Returns:
+            bool: True if the amenity exists, False otherwise.
+        """
+        data_manager = DataManager()
+        amenities = data_manager.get(entity_type=Amenity)
+        for amenity in amenities:
+            if amenity.name == name:
+                return True
+        return False

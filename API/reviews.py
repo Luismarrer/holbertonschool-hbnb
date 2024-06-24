@@ -33,8 +33,7 @@ def create_review(place_id):
     if 'user_id' not in data or 'rating' not in data or 'comment' not in data:
         return jsonify({'error': 'Missing fields'}), 400
 
-    review = Review(place_id=place_id, **data)
-    DataManager.save(review)
+    review = Review(place_id, data['user_id'], data['rating'], data['comment'])
     return jsonify(review.to_dict()), 201
 
 
@@ -48,7 +47,7 @@ def get_reviews_by_user(user_id):
     Returns:
         list: A list of reviews by the user as dictionaries.
     """
-    reviews = DataManager.get(Review, 'user_id', user_id)
+    reviews = DataManager.get(user_id, Review,)
     return jsonify([review.to_dict() for review in reviews]), 200
 
 
@@ -62,7 +61,7 @@ def get_reviews_by_place(place_id):
     Returns:
         list: A list of reviews for the place as dictionaries.
     """
-    reviews = DataManager.get(Review, 'place_id', place_id)
+    reviews = DataManager.get(Review, place_id)
     return jsonify([review.to_dict() for review in reviews]), 200
 
 

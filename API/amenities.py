@@ -13,6 +13,8 @@ from Model.Amenity import Amenity
 from Persistence.DataManager import DataManager
 from .blueprints import amenities_bp
 
+data_manager = DataManager()
+
 
 @amenities_bp.route('/', methods=['POST'])
 def create_amenity():
@@ -28,10 +30,12 @@ def create_amenity():
     data = request.get_json()
     if 'name' not in data:
         return jsonify({'error': 'Missing fields'}), 400
+    
+    if Amenity.amenity_exists(data['name']):
+        return jsonify({'error': 'Amenity already exists'}), 409
 
-    amenity = Amenity(name=data['name'])
-    DataManager.save(amenity)
-    return jsonify(amenity.to_dict()), 201
+    amenity = Amenity(data['name'])
+    return jsonify(amenity.__dict__), 201
 
 
 @amenities_bp.route('/', methods=['GET'])
@@ -42,8 +46,9 @@ def get_amenities():
     Returns:
     - JSON array representing the list of amenities.
     """
-    amenities = DataManager.get(Amenity)
-    return jsonify([amenity.to_dict() for amenity in amenities]), 200
+    data_manager = DataManager()
+    amenities = data_manager.get(entity_type=Amenity)
+    return jsonify([amenity.__dict__ for amenity in amenities]), 200
 
 
 @amenities_bp.route('/<amenity_id>', methods=['GET'])
@@ -57,10 +62,11 @@ def get_amenity(amenity_id):
     Returns:
     - JSON object representing the details of the amenity.
     """
-    amenity = DataManager.get(Amenity, amenity_id)
+    data_manager = DataManager()
+    amenity = data_manager.get(amenity_id, Amenity)
     if not amenity:
         return jsonify({'error': 'Amenity not found'}), 404
-    return jsonify(amenity.to_dict()), 200
+    return jsonify(amenity.__dict__), 200
 
 
 @amenities_bp.route('/<amenity_id>', methods=['PUT'])
@@ -77,13 +83,18 @@ def update_amenity(amenity_id):
     Returns:
     - JSON object representing the updated amenity.
     """
+    data_manager = DataManager()
     data = request.get_json()
-    amenity = DataManager.update(Amenity, amenity_id)
+    amenity = data_manager.get(amenity_id, Amenity)
     if not amenity:
         return jsonify({'error': 'Amenity not found'}), 404
 
-    amenity.name = data.get('name', amenity.name)
-    return jsonify(amenity.to_dict()), 200
+    try:
+        amenity.update_info(new_name=data.get('name'))
+        data_manager.update(amenity)
+        return jsonify(amenity.__dict__), 200
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 409
 
 
 @amenities_bp.route('/<amenity_id>', methods=['DELETE'])
@@ -97,9 +108,10 @@ def delete_amenity(amenity_id):
     Returns:
     - Empty response with status code 204.
     """
-    amenity = DataManager.get(Amenity, amenity_id)
+    data_manager = DataManager()
+    amenity = data_manager.get(amenity_id, Amenity)
     if not amenity:
         return jsonify({'error': 'Amenity not found'}), 404
 
-    DataManager.delete(amenity)
+    data_manager.delete(amenity_id, Amenity)
     return '', 204

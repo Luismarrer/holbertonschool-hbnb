@@ -29,10 +29,15 @@ def create_city():
     data = request.get_json()
     if 'name' not in data or 'country_code' not in data:
         return jsonify({'error': 'Missing fields'}), 400
+    
+    if City.city_exists(data['name'], data['country_code']):
+        return jsonify({'error': 'City already exists'}), 409
 
-    city = City(name=data['name'], country_code=data['country_code'])
-    DataManager.save(city)
-    return jsonify(city.to_dict()), 201
+    try:
+        city = City(name=data['name'], country_code=data['country_code'])
+        return jsonify(city.__dict__), 201
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 409
 
 
 @cities_bp.route('/', methods=['GET'])
@@ -43,8 +48,9 @@ def get_cities():
     Returns:
     - JSON array representing all cities.
     """
-    cities = DataManager.get(City)
-    return jsonify([city.to_dict() for city in cities]), 200
+    data_manager = DataManager()
+    cities = data_manager.get(entity_type=City)
+    return jsonify([city.__dict__ for city in cities]), 200
 
 
 @cities_bp.route('/<city_id>', methods=['GET'])
@@ -58,10 +64,11 @@ def get_city(city_id):
     Returns:
     - JSON object representing the city.
     """
-    city = DataManager.get(City, city_id)
+    data_manager = DataManager()
+    city = data_manager.get(city_id, City)
     if not city:
         return jsonify({'error': 'City not found'}), 404
-    return jsonify(city.to_dict()), 200
+    return jsonify(city.__dict__), 200
 
 
 @cities_bp.route('/<city_id>', methods=['PUT'])
@@ -78,13 +85,18 @@ def update_city(city_id):
     Returns:
     - JSON object representing the updated city.
     """
+    data_manager = DataManager()
     data = request.get_json()
-    city = DataManager.update(City, city_id)
+    city = data_manager.get(city_id, City)
     if not city:
         return jsonify({'error': 'City not found'}), 404
 
-    city.name = data.get('name', city.name)
-    return jsonify(city.to_dict()), 200
+    try:
+        city.update_info(name=data.get('name'), country_code=data.get('country_code'))
+        data_manager.update(city)
+        return jsonify(city.__dict__), 200
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 409
 
 
 @cities_bp.route('/<city_id>', methods=['DELETE'])
@@ -98,9 +110,10 @@ def delete_city(city_id):
     Returns:
     - Empty response with status code 204.
     """
-    city = DataManager.get(City, city_id)
+    data_manager = DataManager()
+    city = data_manager.get(city_id, City)
     if not city:
         return jsonify({'error': 'City not found'}), 404
 
-    DataManager.delete(city)
+    data_manager.delete(city_id, City)
     return '', 204

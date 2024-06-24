@@ -13,7 +13,7 @@ class Place(BaseModel):
     A class representing a place.
     """
 
-    def __init__(self, host_id, name, description, address, number_of_rooms, number_of_bathrooms, max_guest, price_per_nigth, latitude, longitude, city_id):
+    def __init__(self, name, description, address, city_id, latitude, longitude, host_id, number_of_rooms, number_of_bathrooms, price_per_night, max_guests, amenity_ids=None):
         """
         Initialize a new Place object.
 
@@ -21,7 +21,7 @@ class Place(BaseModel):
             name (str): The name of the place.
         """
         if not name or not city_id or not host_id or not description\
-                or not price_per_nigth or not max_guest:
+                or not price_per_night or not max_guests:
             raise ValueError("Invalid arguments")
         self.host_id = host_id
         self.name = name
@@ -30,8 +30,8 @@ class Place(BaseModel):
         self.address = address
         self.number_of_rooms = number_of_rooms
         self.number_of_bathrooms = number_of_bathrooms
-        self.price_per_nigth = price_per_nigth
-        self.max_guest = max_guest
+        self.price_per_night = price_per_night
+        self.max_guest = max_guests
         self.latitude = latitude
         self.longitude = longitude
         self.amenities = []
@@ -75,7 +75,7 @@ class Place(BaseModel):
         if number_of_bathrooms is not None:
             self.number_of_bathrooms = number_of_bathrooms
         if price_per_night is not None:
-            self.price_per_nigth = price_per_night
+            self.price_per_nigth = str(price_per_night)
         if max_guests is not None:
             self.max_guest = max_guests
         if amenity_ids is not None:

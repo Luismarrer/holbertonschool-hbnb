@@ -5,84 +5,107 @@ This module contains the DataManager class.
 import os
 import json
 from Persistence.IPersistenceManager import IPersistenceManager
-storage_path='./Persistence/data'
+from Model.Country import Country
 
 class DataManager(IPersistenceManager):
-    """
-    This class represents a data manager
-    that handles the persistence of entities.
+    def __init__(self, storage_path="data_storage.json", preload_path="countries_data.json"):
+        self.storage_path = storage_path
+        self.preload_path = preload_path
+        self.data = self._load_storage()
+        self._preload_countries()
 
-    Args:
-        IPersistenceManager (type):
-            The base persistence manager class.
-    """
-    
-            
-    def save(self, entity):
-        if not os.path.exists(storage_path):
-            os.makedirs(storage_path)
-        # Load existing data
-        if os.path.exists(f"{storage_path}/{type(entity).__name__}.json"):
-            with open(f"{storage_path}/{type(entity).__name__}.json", 'r') as f:
-                data = json.load(f)
-        else:
-            data = []
-    
-        # Update data with new entity
-        data.append(entity.__dict__)
-    
-        # Save updated data to storage
-        with open(f"{storage_path}/{type(entity).__name__}.json", 'w') as f:
-            json.dump(data, f, indent=4)
-
-        
-    def get(self, entity_id="", entity_type=""):
+    def _load_storage(self):
         """
-        Retrieve an entity based on ID and type.
+        Load the data from the storage file.
+        """
+        if os.path.exists(self.storage_path):
+            with open(self.storage_path, 'r') as file:
+                return json.load(file)
+        return {}
+
+    def _save_storage(self):
+        """
+        Save the data to the storage file.
+        """
+        with open(self.storage_path, 'w') as file:
+            json.dump(self.data, file, indent=4)
+
+    def _preload_countries(self):
+        """
+        Preload countries from a JSON file.
+        """
+        if 'Country' not in self.data:
+            with open(self.preload_path, 'r') as file:
+                countries = json.load(file)
+                self.data['Country'] = {country['code']: country for country in countries}
+                self._save_storage()
+
+    def save(self, entity):
+        """
+        Save an entity to the storage.
 
         Args:
-            entity_id (type): The ID of the entity.
-            entity_type (type): The type of the entity.
+            entity (object): The entity to save.
+        """
+        entity_type = type(entity).__name__
+        if entity_type not in self.data:
+            self.data[entity_type] = {}
+        self.data[entity_type][entity.id] = entity.__dict__
+        self._save_storage()
+
+    def get(self, entity_id=None, entity_type=None):
+        """
+        Retrieve entities from the storage. If an ID is provided, retrieve a single entity.
+        If no ID is provided, retrieve all entities of the given type.
+
+        Args:
+            entity_id (str, optional): The ID of the entity to retrieve. Defaults to None.
+            entity_type (type, optional): The type of the entity to retrieve. Defaults to None.
 
         Returns:
-            The retrieved entity.
+            object or list: A single entity object if an ID is provided, otherwise a list of all entities of the given type.
         """
-        # Logic to retrieve an entity based on ID and type
-        with open(f"{storage_path}/{entity_type.__name__}.json", 'r') as f:
-            data = json.load(f)
-            for entity_data in data:
-                if entity_data['id'] == entity_id:
-                     return entity_data
-            return data
+        entity_type_name = entity_type.__name__
+        if entity_type_name in self.data:
+            if entity_id:
+                if entity_id in self.data[entity_type_name]:
+                    entity_data = self.data[entity_type_name][entity_id]
+                    if entity_type_name == 'Country':
+                        return Country(**entity_data)
+                    entity = entity_type.__new__(entity_type)
+                    entity.__dict__.update(entity_data)
+                    return entity
+                return None
+            else:
+                entities = []
+                for entity_data in self.data[entity_type_name].values():
+                    if entity_type_name == 'Country':
+                        entities.append(Country(**entity_data))
+                    else:
+                        entity = entity_type.__new__(entity_type)
+                        entity.__dict__.update(entity_data)
+                        entities.append(entity)
+                return entities
+        return None
 
     def update(self, entity):
         """
-        Update the given entity in storage.
+        Update an entity in the storage.
 
         Args:
-            entity (type): The entity to be updated.
+            entity (object): The entity to update.
         """
-        # Logic to update an entity in storage
-        update_entity = self.get(entity.id, type(entity))
-        if update_entity is not None:
-        # Apply updates to the entity
-            for key, value in entity.__dict__.items():
-                if key in entity:
-                    entity[key] = value
-        
-            # Save the updated entity
-            self.save(entity)
-        else:
-            print("Entity not found")
-        
+        self.save(entity)
 
     def delete(self, entity_id, entity_type):
         """
-        Delete an entity from storage based on ID and type.
+        Delete an entity from the storage based on its ID and type.
 
         Args:
-            entity_id (type): The ID of the entity.
-            entity_type (type): The type of the entity.
+            entity_id (str): The ID of the entity to delete.
+            entity_type (type): The type of the entity to delete.
         """
-        # Logic to delete an entity from storage
-        os.remove(f"{storage_path}/{entity_id}_{entity_type.__name__}.json")
+        entity_type_name = entity_type.__name__
+        if entity_type_name in self.data and entity_id in self.data[entity_type_name]:
+            del self.data[entity_type_name][entity_id]
+            self._save_storage()

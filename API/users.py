@@ -11,11 +11,10 @@ The users module provides the following endpoints:
 
 from flask import request, jsonify
 from Model.User import User
-from Persistence.DataManager import DataManager
 from .blueprints import users_bp
+from Persistence.DataManager import DataManager
 
 
-data_manager = DataManager()
 @users_bp.route('/', methods=['POST'])
 def create_user():
     """
@@ -25,13 +24,14 @@ def create_user():
         A JSON response containing the created user's information.
     """
     data = request.get_json()
-    if 'email' not in data or 'first_name' not in data \
-            or 'last_name' not in data:
+    if 'email' not in data or 'first_name' not in data or 'last_name' not in data:
         return jsonify({'error': 'Missing fields'}), 400
-    else:
-        user = User(data['email'], data['first_name'], data['last_name'])
-        data_manager.save(user)
+
+    try:
+        user = User(email=data['email'], first_name=data['first_name'], last_name=data['last_name'])
         return jsonify(user.__dict__), 201
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 409
     
 
 @users_bp.route('/', methods=['GET'])
@@ -42,8 +42,12 @@ def get_users():
     Returns:
         A JSON response containing a list of all users' information.
     """
-    users = data_manager.get(0, User)
-    return users
+
+    data_manager = DataManager()
+    users = data_manager.get(entity_type=User)
+    return jsonify([user.__dict__ for user in users]), 200
+
+
 @users_bp.route('/<user_id>', methods=['GET'])
 def get_user(user_id):
     """
@@ -56,10 +60,11 @@ def get_user(user_id):
         A JSON response containing the user's information if found,
         or an error message if not found.
     """
+    data_manager = DataManager()
     user = data_manager.get(user_id, User)
     if not user:
         return jsonify({'error': 'User not found'}), 404
-    return user, 200
+    return jsonify(user.__dict__), 200
 
 
 @users_bp.route('/<user_id>', methods=['PUT'])
@@ -74,17 +79,24 @@ def update_user(user_id):
         A JSON response containing the updated user's information if found,
         or an error message if not found.
     """
+    
+    data_manager = DataManager()
     data = request.get_json()
-    user = data_manager.update(User, user_id)
+    user = data_manager.get(user_id, User)
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    user.first_name = data.get('first_name', user.first_name)
-    user.last_name = data.get('last_name', user.last_name)
-    return user, 200
+    try:
+        user.update_info(new_first_name=data.get('first_name'),
+                         new_last_name=data.get('last_name'),
+                         new_email=data.get('email'))
+        data_manager.update(user)
+        return jsonify(user.__dict__), 200
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 409
 
 
-@users_bp.route('/users/<user_id>', methods=['DELETE'])
+@users_bp.route('/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     """
     Delete a specific user.
@@ -96,9 +108,10 @@ def delete_user(user_id):
         An empty response with status code 204 if the user is deleted,
         or an error message if not found.
     """
-    user = DataManager.get(User, user_id)
+    data_manager = DataManager()
+    user = data_manager.get(user_id, User)
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    DataManager.delete(user)
+    data_manager.delete(user_id, User)
     return '', 204

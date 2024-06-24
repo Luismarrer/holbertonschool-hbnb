@@ -40,13 +40,18 @@ def create_place():
     data = request.get_json()
     required_fields = ['name', 'description', 'address', 'city_id', 'latitude',
                        'longitude', 'host_id', 'number_of_rooms',
-                       'number_of_bathrooms', 'price_per_night', 'max_guests']
+                       'number_of_bathrooms', 'price_per_night', 'max_guests', 'amenity_ids']
     if not all(field in data for field in required_fields):
         return jsonify({'error': 'Missing fields'}), 400
 
-    place = Place(**data)
-    DataManager.save(place)
-    return jsonify(place.to_dict()), 201
+    place = Place(name=data['name'], description=data['description'],
+				  address=data['address'], city_id=data['city_id'],
+				  latitude=data['latitude'], longitude=data['longitude'],
+				  host_id=data['host_id'], number_of_rooms=data['number_of_rooms'],
+				  number_of_bathrooms=data['number_of_bathrooms'],
+				  price_per_night=data['price_per_night'],
+				  max_guests=data['max_guests'])
+    return jsonify(place.__dict__), 201
 
 
 @places_bp.route('/', methods=['GET'])
@@ -57,8 +62,9 @@ def get_places():
     Returns:
     - Returns a list of all places as JSON with status code 200.
     """
-    places = DataManager.get(Place)
-    return jsonify([place.to_dict() for place in places]), 200
+    data_manager = DataManager()
+    places = data_manager.get(entity_type=Place)
+    return jsonify([place.__dict__ for place in places]), 200
 
 
 @places_bp.route('/<place_id>', methods=['GET'])
@@ -74,10 +80,11 @@ def get_place(place_id):
     - If the place is not found, returns an error
         message as JSON with status code 404.
     """
-    place = DataManager.get(Place, place_id)
+    data_manager = DataManager()
+    place = data_manager.get(place_id, Place)
     if not place:
         return jsonify({'error': 'Place not found'}), 404
-    return jsonify(place.to_dict()), 200
+    return jsonify(place.__dict__), 200
 
 
 @places_bp.route('/<place_id>', methods=['PUT'])
@@ -133,9 +140,10 @@ def delete_place(place_id):
     - If the place is not found,
         returns an error message as JSON with status code 404.
     """
-    place = DataManager.get(Place, place_id)
+    data_manager = DataManager()
+    place = data_manager.get(place_id, Place)
     if not place:
         return jsonify({'error': 'Place not found'}), 404
 
-    DataManager.delete(place)
+    data_manager.delete(place_id, Place)
     return '', 204
