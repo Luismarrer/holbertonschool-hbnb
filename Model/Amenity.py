@@ -30,7 +30,6 @@ class Amenity(BaseModel):
 
         """
         self.name = name
-        self.places = []
         super().__init__()
 
 
@@ -45,14 +44,6 @@ class Amenity(BaseModel):
         if new_name:
             self.name = new_name
         self.update()
-
-    def delete(self):
-        """
-        Deletes the amenity instance.
-        """
-        for place in self.places:
-            if self in place.amenities:
-                place.amenities.remove(self)
 
     @staticmethod
     def amenity_exists(name):

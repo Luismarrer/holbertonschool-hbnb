@@ -13,7 +13,7 @@ class Place(BaseModel):
     A class representing a place.
     """
 
-    def __init__(self, name, description, address, city_id, latitude, longitude, host_id, number_of_rooms, number_of_bathrooms, price_per_night, max_guests, amenity_ids=None):
+    def __init__(self, name, description, address, city_id, latitude, longitude, host_id, number_of_rooms, number_of_bathrooms, price_per_night, max_guests, amenity_ids=[]):
         """
         Initialize a new Place object.
 
@@ -34,7 +34,7 @@ class Place(BaseModel):
         self.max_guest = max_guests
         self.latitude = latitude
         self.longitude = longitude
-        self.amenities = []
+        self.amenities = amenity_ids
         self.reviews = []
         super().__init__()
 

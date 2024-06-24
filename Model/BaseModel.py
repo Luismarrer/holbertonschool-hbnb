@@ -22,7 +22,7 @@ class BaseModel():
         self.created_at = str(datetime.now())
         self.updated_at = self.created_at
         data_manager.save(self)
-        
+
     def update(self):
         """
         Updates the `updated_at` attribute to the current datetime.

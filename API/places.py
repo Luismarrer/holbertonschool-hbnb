@@ -13,6 +13,8 @@ from flask import request, jsonify
 from Model.Place import Place
 from Persistence.DataManager import DataManager
 from .blueprints import places_bp
+from Model.City import City
+from Model.Amenity import Amenity
 
 @places_bp.route('/', methods=['POST'])
 def create_place():
@@ -37,20 +39,32 @@ def create_place():
     - If missing fields in the request body, returns an
         error message as JSON with status code 400.
     """
+    data_manager = DataManager()
     data = request.get_json()
     required_fields = ['name', 'description', 'address', 'city_id', 'latitude',
                        'longitude', 'host_id', 'number_of_rooms',
                        'number_of_bathrooms', 'price_per_night', 'max_guests', 'amenity_ids']
     if not all(field in data for field in required_fields):
         return jsonify({'error': 'Missing fields'}), 400
+    
+    city = data_manager.get(data['city_id'], City)
+    if not city:
+        return jsonify({'error': 'City ID does not exist'}), 400
+
+    amenity_ids = data.get('amenity_ids', [])
+    print(amenity_ids)
+    for amenity_id in amenity_ids:
+        print(amenity_id)
+        if not data_manager.get(amenity_id, Amenity):
+            return jsonify({'error': 'Amenity ID does not exist'}), 400
 
     place = Place(name=data['name'], description=data['description'],
-				  address=data['address'], city_id=data['city_id'],
-				  latitude=data['latitude'], longitude=data['longitude'],
-				  host_id=data['host_id'], number_of_rooms=data['number_of_rooms'],
-				  number_of_bathrooms=data['number_of_bathrooms'],
-				  price_per_night=data['price_per_night'],
-				  max_guests=data['max_guests'])
+                  address=data['address'], city_id=data['city_id'],
+                  latitude=data['latitude'], longitude=data['longitude'],
+                  host_id=data['host_id'], number_of_rooms=data['number_of_rooms'],
+                  number_of_bathrooms=data['number_of_bathrooms'],
+                  price_per_night=data['price_per_night'],
+                  max_guests=data['max_guests'], amenity_ids=amenity_ids)
     return jsonify(place.__dict__), 201
 
 

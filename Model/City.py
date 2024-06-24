@@ -25,7 +25,6 @@ class City(BaseModel):
             raise ValueError(f"Country code {country_code} does not exist.")
         self.name = name
         self.country = country_code
-        self.places = []  # List of places in the city.
         super().__init__()
 
     def update_info(self, name=None, country_code=None):
